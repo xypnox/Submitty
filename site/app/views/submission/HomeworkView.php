@@ -79,10 +79,35 @@ HTML;
         // showing submission if user is grader or student can submit
         if ($this->core->getUser()->accessGrading() || $gradeable->getStudentSubmit()) {
             $return .= <<<HTML
+<script type="text/javascript">
+function timedMsg() {
+    var t=setInterval("change_time();",1000);
+}
+function change_time() {
+    var d = new Date();
+    var curr_hour = d.getHours();
+    var curr_min = d.getMinutes();
+    var curr_sec = d.getSeconds();
+    if(curr_hour > 12) {
+        curr_hour = curr_hour - 12;
+        document.getElementById('Meridiem').innerHTML = " am";
+    }
+    document.getElementById('Meridiem').innerHTML = " pm";
+    document.getElementById('Hour').innerHTML =curr_hour+':';
+    document.getElementById('Minut').innerHTML = curr_min+':';
+    document.getElementById('Second').innerHTML = curr_sec;
+}
+timedMsg();
+</script>
+
 <div class="content">
     <div class="upperinfo">
         <h2 class="upperinfo-left">New submission for: {$gradeable->getName()}</h2>
         <h2 class="upperinfo-right">Due: {$gradeable->getDueDate()->format("m/d/Y{$time}")}</h2>
+    </div>
+    <div class="upperinfo">
+        <h2 class="upperinfo-right">Current time: <span id="Hour"></span><span id="Minut"></span><span id="Second"></span><span id="Meridiem"></span></h2>
+        <br>
     </div>
 HTML;
             if ($this->core->getUser()->accessAdmin()) {
@@ -117,7 +142,7 @@ HTML;
                 $return .= <<<HTML
     <form id="submissionForm" method="post" style="text-align: center; margin: 0 auto; width: 100%; ">
         <div >
-            <input type='radio' id="radio_normal" name="submission_type" checked="true"> 
+            <input type='radio' id="radio_normal" name="submission_type" checked="true">
                 Normal Submission
             <input type='radio' id="radio_student" name="submission_type">
                 Make Submission for a Student
@@ -360,7 +385,7 @@ HTML;
                         break;
                     }
                 }
-                if ($student_page) {                
+                if ($student_page) {
                     $return .= <<<HTML
     <form id="pdfPageStudent">
         <div class="sub">
@@ -482,7 +507,7 @@ HTML;
                 submitSplitItem("{$this->core->getCsrfToken()}", "{$gradeable->getId()}", user_id, path, count);
                 moveNextInput(count);
             }
-            
+
             // otherwise, this is a regular submission of the uploaded files
             else if (user_id == "") {
                 handleSubmission({$late_days_use},
@@ -610,7 +635,7 @@ HTML;
                         $return .= <<<HTML
             <tr class="tr tr-vertically-centered">
                 <td>{$count}</td>
-                <td>{$clean_timestamp}</td> 
+                <td>{$clean_timestamp}</td>
                 <td>
                     {$filename_full}</br>
                     <object data="{$url}" type="application/pdf" width="100%" height="300">
@@ -659,7 +684,7 @@ HTML;
             var count = btn.parent().parent().index()+1;
             var name = "bulk_user_id_"+count;
             var user_ids = [];
-            $("input[id^='"+name+"']").each(function(){ user_ids.push(this.value); }); 
+            $("input[id^='"+name+"']").each(function(){ user_ids.push(this.value); });
             var js_count_array = $count_array_json;
             var path = decodeURIComponent(js_count_array[count]);
             if (id.includes("delete")) {
@@ -837,7 +862,7 @@ HTML;
                 if ($gradeable->hasIncentiveMessage()) {
                     $return .= <<<HTML
     <div class="sub" id="incentive_message" style="display: none;">
-        <p class='green-message'>{$gradeable->getIncentiveMessage()}</p>    
+        <p class='green-message'>{$gradeable->getIncentiveMessage()}</p>
     </div>
 HTML;
                 }
