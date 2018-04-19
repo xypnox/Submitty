@@ -73,31 +73,38 @@ HTML;
         $student_page = false;
         $num_components = count($gradeable->getComponents());
         $time = " @ H:i";
+        $timestamp = time();
         $return .= <<<HTML
 <script type="text/javascript" src="{$this->core->getConfig()->getBaseUrl()}js/drag-and-drop.js"></script>
 HTML;
         // showing submission if user is grader or student can submit
         if ($this->core->getUser()->accessGrading() || $gradeable->getStudentSubmit()) {
             $return .= <<<HTML
+
 <script type="text/javascript">
-function timedMsg() {
-    var t=setInterval("change_time();",1000);
-}
+var serverTime = $timestamp*1000;
+var jsTime = new Date();
 function change_time() {
-    var d = new Date();
-    var curr_hour = d.getHours();
-    var curr_min = d.getMinutes();
-    var curr_sec = d.getSeconds();
+    var currentTime = new Date();
+    var mills = serverTime + (currentTime - jsTime);
+    var newServerTime = new Date(mills);
+    var curr_hour = newServerTime.getHours();
+    var curr_min =  newServerTime.getMinutes();
+    var curr_sec =  newServerTime.getSeconds();
     if(curr_hour > 12) {
         curr_hour = curr_hour - 12;
+        document.getElementById('Meridiem').innerHTML = " pm";
+    } else {
         document.getElementById('Meridiem').innerHTML = " am";
     }
-    document.getElementById('Meridiem').innerHTML = " pm";
-    document.getElementById('Hour').innerHTML =curr_hour+':';
-    document.getElementById('Minut').innerHTML = curr_min+':';
-    document.getElementById('Second').innerHTML = curr_sec;
+    document.getElementById('Hour').innerHTML = curr_hour + ':';
+    document.getElementById('Minut').innerHTML = ('0' + curr_min).slice(-2) + ':';
+    document.getElementById('Second').innerHTML = ('0' + curr_sec).slice(-2);
 }
-timedMsg();
+function startInterval(){
+    setInterval('change_time();', 1000);
+}
+startInterval();
 </script>
 
 <div class="content">
@@ -106,7 +113,7 @@ timedMsg();
         <h2 class="upperinfo-right">Due: {$gradeable->getDueDate()->format("m/d/Y{$time}")}</h2>
     </div>
     <div class="upperinfo">
-        <h2 class="upperinfo-right">Current time: <span id="Hour"></span><span id="Minut"></span><span id="Second"></span><span id="Meridiem"></span></h2>
+        <h2 class="upperinfo-right">Current server time: <span id="Hour"></span><span id="Minut"></span><span id="Second"></span><span id="Meridiem"></span></h2>
         <br>
     </div>
 HTML;
