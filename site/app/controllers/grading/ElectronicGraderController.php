@@ -435,7 +435,7 @@ class ElectronicGraderController extends AbstractController {
             $settings_file = FileUtils::joinPaths($this->core->getConfig()->getCoursePath(), "submissions", $gradeable_id, $team_id, "user_assignment_settings.json");
             $json = FileUtils::readJsonFile($settings_file);
             if ($json === false) {
-                $this->core->addErrorMEssage("Failed to open settings file");
+                $this->core->addErrorMessage("Failed to open settings file");
                 $this->core->redirect($return_url);
             }
             foreach($add_user_ids as $id) {
@@ -447,7 +447,7 @@ class ElectronicGraderController extends AbstractController {
                                                     "admin_user" => $this->core->getUser()->getId(), "removed_user" => $id);
             }
             if (!@file_put_contents($settings_file, FileUtils::encodeJson($json))) {
-                $this->core->addErrorMEssage("Failed to write to team history to settings file");
+                $this->core->addErrorMessage("Failed to write to team history to settings file");
             }
         }   
         
@@ -500,13 +500,13 @@ class ElectronicGraderController extends AbstractController {
 
         $gradeable_path = FileUtils::joinPaths($core->getConfig()->getCoursePath(), "submissions", $gradeable_id);
         if (!FileUtils::createDir($gradeable_path)) {
-            $core->addErrorMEssage("Failed to make folder for this assignment");
+            $core->addErrorMessage("Failed to make folder for this assignment");
             return;
         }
 
         $user_path = FileUtils::joinPaths($gradeable_path, $team_id);
         if (!FileUtils::createDir($user_path)) {
-            $core->addErrorMEssage("Failed to make folder for this assignment for the team");
+            $core->addErrorMessage("Failed to make folder for this assignment for the team");
             return;
         }
 
@@ -521,7 +521,7 @@ class ElectronicGraderController extends AbstractController {
             }
         }
         if (!@file_put_contents($settings_file, FileUtils::encodeJson($json))) {
-            $this->core->addErrorMEssage("Failed to write to team history to settings file");
+            $core->addErrorMessage("Failed to write to team history to settings file");
         }
     }
 
