@@ -67,7 +67,7 @@ function eraseCookie(name) {
 
 function deleteCookies(){
     $.each(document.cookie.split(/; */), function(){
-        var cookie = this.split("=")
+        var cookie = this.split("=");
         if(!cookie[1] || cookie[1] == 'undefined'){
             document.cookie = cookie[0] + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
             document.cookie = "cookie_version=-1; path=/;";
@@ -77,76 +77,44 @@ function deleteCookies(){
 
 function onAjaxInit() {}
 
+function readCookie(cookie_name){
+    var matched = document.cookie.match('(^|;)\\s*' + cookie_name + '\\s*=\\s*([^;]+)');
+
+    if (matched) return matched.pop();
+    else  return null;
+}
+
+function loadProperties(cookie_name, element_name){
+    var properties = ['top', 'left', 'width', "height", 'visible'];
+
+    properties.forEach(function(prop) {
+        var value = readCookie(cookie_name + "_" + prop);
+        (value) ? $(element_name).css(prop, value):{};
+    });
+
+}
+
 function readCookies(){
-    var output_top = document.cookie.replace(/(?:(?:^|.*;\s*)output_top\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var output_left = document.cookie.replace(/(?:(?:^|.*;\s*)output_left\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var output_width = document.cookie.replace(/(?:(?:^|.*;\s*)output_width\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var output_height = document.cookie.replace(/(?:(?:^|.*;\s*)output_height\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var output_visible = document.cookie.replace(/(?:(?:^|.*;\s*)output_visible\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    loadProperties("output", "#autograding_results");
+    loadProperties("files", "#submission_browser");
+    loadProperties("rubric", "#grading_rubric");
+    loadProperties("status", "#student_info");
+    loadProperties("bar_wrapper", "#bar_wrapper");
 
-    var files_top = document.cookie.replace(/(?:(?:^|.*;\s*)files_top\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var files_left = document.cookie.replace(/(?:(?:^|.*;\s*)files_left\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var files_width = document.cookie.replace(/(?:(?:^|.*;\s*)files_width\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var files_height = document.cookie.replace(/(?:(?:^|.*;\s*)files_height\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var files_visible = document.cookie.replace(/(?:(?:^|.*;\s*)files_visible\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    var overwrite = readCookie("overwrite");
 
-    var rubric_top = document.cookie.replace(/(?:(?:^|.*;\s*)rubric_top\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var rubric_left = document.cookie.replace(/(?:(?:^|.*;\s*)rubric_left\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var rubric_width = document.cookie.replace(/(?:(?:^|.*;\s*)rubric_width\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var rubric_height = document.cookie.replace(/(?:(?:^|.*;\s*)rubric_height\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var rubric_visible = document.cookie.replace(/(?:(?:^|.*;\s*)rubric_visible\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    var autoscroll = readCookie("autoscroll");
+    var opened_mark = readCookie("opened_mark");
+    var scroll_pixel = readCookie("scroll_pixel");
 
-    var status_top = document.cookie.replace(/(?:(?:^|.*;\s*)status_top\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var status_left = document.cookie.replace(/(?:(?:^|.*;\s*)status_left\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var status_width = document.cookie.replace(/(?:(?:^|.*;\s*)status_width\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var status_height = document.cookie.replace(/(?:(?:^|.*;\s*)status_height\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var status_visible = document.cookie.replace(/(?:(?:^|.*;\s*)status_visible\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    var testcases = readCookie("testcases");
 
-    var bar_wrapper_top = document.cookie.replace(/(?:(?:^|.*;\s*)bar_wrapper_top\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var bar_wrapper_left = document.cookie.replace(/(?:(?:^|.*;\s*)bar_wrapper_left\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var bar_wrapper_width = document.cookie.replace(/(?:(?:^|.*;\s*)bar_wrapper_width\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var bar_wrapper_height = document.cookie.replace(/(?:(?:^|.*;\s*)bar_wrapper_height\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var bar_wrapper_visible = document.cookie.replace(/(?:(?:^|.*;\s*)bar_wrapper_visible\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    var files = readCookie("files");
 
-    var overwrite = document.cookie.replace(/(?:(?:^|.*;\s*)overwrite\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-    var autoscroll = document.cookie.replace(/(?:(?:^|.*;\s*)autoscroll\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var opened_mark = document.cookie.replace(/(?:(?:^|.*;\s*)opened_mark\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    var scroll_pixel = document.cookie.replace(/(?:(?:^|.*;\s*)scroll_pixel\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-    var testcases = document.cookie.replace(/(?:(?:^|.*;\s*)testcases\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-    var files = document.cookie.replace(/(?:(?:^|.*;\s*)files\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-    (output_top) ? $("#autograding_results").css("top", output_top):{};
-    (output_left) ? $("#autograding_results").css("left", output_left):{};
-    (output_width) ? $("#autograding_results").css("width", output_width):{};
-    (output_height) ? $("#autograding_results").css("height", output_height):{};
-    (output_visible) ? $("#autograding_results").css("display", output_visible):{};
-
-    (rubric_top) ? $("#grading_rubric").css("top", rubric_top):{};
-    (rubric_left) ? $("#grading_rubric").css("left", rubric_left):{};
-    (rubric_width) ? $("#grading_rubric").css("width", rubric_width):{};
-    (rubric_height) ? $("#grading_rubric").css("height", rubric_height):{};
-    (rubric_visible) ? $("#grading_rubric").css("display", rubric_visible):{};
-
-    (files_top) ? $("#submission_browser").css("top", files_top):{};
-    (files_left) ? $("#submission_browser").css("left", files_left):{};
-    (files_width) ? $("#submission_browser").css("width", files_width):{};
-    (files_height) ? $("#submission_browser").css("height", files_height):{};
-    (files_visible) ? $("#submission_browser").css("display", files_visible):{};
-
-    (status_top) ? $("#student_info").css("top", status_top):{};
-    (status_left) ? $("#student_info").css("left", status_left):{};
-    (status_width) ? $("#student_info").css("width", status_width):{};
-    (status_height) ? $("#student_info").css("height", status_height):{};
-    (status_visible) ? $("#student_info").css("display", status_visible):{};
-
-    (bar_wrapper_top) ? $("#bar_wrapper").css("top", bar_wrapper_top):{};
-    (bar_wrapper_left) ? $("#bar_wrapper").css("left", bar_wrapper_left):{};
-    (bar_wrapper_width) ? $("#bar_wrapper").css("width", bar_wrapper_width):{};
-    (bar_wrapper_height) ? $("#bar_wrapper").css("height", bar_wrapper_height):{};
-    (bar_wrapper_visible) ? $("#bar_wrapper").css("display", bar_wrapper_visible):{};
+    var output_visible = readCookie("output_visible");
+    var files_visible = readCookie("files_visible");
+    var rubric_visible = readCookie("rubric_visible");
+    var status_visible = readCookie("status_visible");
 
     (output_visible) ? ((output_visible) == "none" ? $(".fa-list-alt").removeClass("icon-selected") : $(".fa-list-alt").addClass("icon-selected")) : {};
     (files_visible) ? ((files_visible) == "none" ? $(".fa-folder-open").removeClass("icon-selected") : $(".fa-folder-open").addClass("icon-selected")) : {};
@@ -163,7 +131,7 @@ function readCookies(){
             if (scroll_pixel > 0) {
                 document.getElementById('grading_rubric').scrollTop = scroll_pixel;
             }
-        }
+        };
         
         var testcases_array = JSON.parse(testcases);
         testcases_array.forEach(function(element) {
@@ -204,36 +172,20 @@ function readCookies(){
     }
 }
 
+function updateCookie(cookie_name, element_name){
+    document.cookie = cookie_name + "_top=" + $(element_name).css("top") + "; path=/;";
+    document.cookie = cookie_name + "_left=" + $(element_name).css("left") + "; path=/;";
+    document.cookie = cookie_name + "_width=" + $(element_name).css("width") + "; path=/;";
+    document.cookie = cookie_name + "_height=" + $(element_name).css("height") + "; path=/;";
+    document.cookie = cookie_name + "_visible=" + $(element_name).css("display") + "; path=/;";
+}
+
 function updateCookies(){
-    document.cookie = "output_top=" + $("#autograding_results").css("top") + "; path=/;";
-    document.cookie = "output_left=" + $("#autograding_results").css("left") + "; path=/;";
-    document.cookie = "output_width=" + $("#autograding_results").css("width") + "; path=/;";
-    document.cookie = "output_height=" + $("#autograding_results").css("height") + "; path=/;";
-    document.cookie = "output_visible=" + $("#autograding_results").css("display") + "; path=/;";
-
-    document.cookie = "rubric_top=" + $("#grading_rubric").css("top") + "; path=/;";
-    document.cookie = "rubric_left=" + $("#grading_rubric").css("left") + "; path=/;";
-    document.cookie = "rubric_width=" + $("#grading_rubric").css("width") + "; path=/;";
-    document.cookie = "rubric_height=" + $("#grading_rubric").css("height") + "; path=/;";
-    document.cookie = "rubric_visible=" + $("#grading_rubric").css("display") + "; path=/;";
-
-    document.cookie = "files_top=" + $("#submission_browser").css("top") + "; path=/;";
-    document.cookie = "files_left=" + $("#submission_browser").css("left") + "; path=/;";
-    document.cookie = "files_width=" + $("#submission_browser").css("width") + "; path=/;";
-    document.cookie = "files_height=" + $("#submission_browser").css("height") + "; path=/;";
-    document.cookie = "files_visible=" + $("#submission_browser").css("display") + "; path=/;";
-
-    document.cookie = "status_top=" + $("#student_info").css("top") + "; path=/;";
-    document.cookie = "status_left=" + $("#student_info").css("left") + "; path=/;";
-    document.cookie = "status_width=" + $("#student_info").css("width") + "; path=/;";
-    document.cookie = "status_height=" + $("#student_info").css("height") + "; path=/;";
-    document.cookie = "status_visible=" + $("#student_info").css("display") + "; path=/;";
-
-    document.cookie = "bar_wrapper_top=" + $("#bar_wrapper").css("top") + "; path=/;";
-    document.cookie = "bar_wrapper_left=" + $("#bar_wrapper").css("left") + "; path=/;";
-    document.cookie = "bar_wrapper_width=" + $("#bar_wrapper").css("width") + "; path=/;";
-    document.cookie = "bar_wrapper_height=" + $("#bar_wrapper").css("height") + "; path=/;";
-    document.cookie = "bar_wrapper_visible=" + $("#bar_wrapper").css("display") + "; path=/;";
+    updateCookie("output", "#autograding_results");
+    updateCookie("rubric", "#grading_rubric");
+    updateCookie("files", "#submission_browser");
+    updateCookie("status", "#student_info");
+    updateCookie("bar_wrapper", "#bar_wrapper");
 
     var overwrite = "on";
     if ($('#overwrite-id').is(":checked")) {
