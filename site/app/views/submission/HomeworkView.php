@@ -73,6 +73,33 @@ HTML;
         $student_page = false;
         $num_components = count($gradeable->getComponents());
         $time = " @ H:i";
+        $systemTz = sprintf( trim(file_get_contents("/etc/timezone")) );
+
+        $status = false;
+        $out = "";
+        exec("cd", $out, $status);
+        // if ($status) {
+        //     var_dump("True");
+        // } else {
+        //     var_dump("False");
+        // }
+
+        $time_command = 'python3 /usr/local/submitty/GIT_CHECKOUT_Submitty/python_submitty_utils/submitty_utils/dateutils.py get_timestamp';
+        $command = escapeshellcmd($time_command);
+        $output = shell_exec($command);
+        //var_dump($output);
+
+        //$output = shell_exec($time_command);
+        // $resultData = json_decode($result, true);
+        // var_dump($resultData);
+
+        // $dateTimeZone = new DateTimeZone("America/New_York");
+        // $dateTime = new DateTime("now", $dateTimeZone);
+        // $timeOffset = $dateTimeZone->getOffset($dateTime);
+        // // New time since epoch according to timezone
+        // $newTime = time() + $timeOffset;
+        // echo date("H:i:s", $newTime);
+
         $timestamp = time();
         $return .= <<<HTML
 <script type="text/javascript" src="{$this->core->getConfig()->getBaseUrl()}js/drag-and-drop.js"></script>
@@ -82,9 +109,14 @@ HTML;
             $return .= <<<HTML
 
 <script type="text/javascript">
-var serverTime = $timestamp*1000;
+var serverTime;
 var jsTime = new Date();
-function change_time() {
+function updateServerTime() {
+    serverTime = $timestamp * 1000;
+    jsTime = new Date();
+}
+updateServerTime();
+function changeTime() {
     var currentTime = new Date();
     var mills = serverTime + (currentTime - jsTime);
     var newServerTime = new Date(mills);
@@ -102,7 +134,8 @@ function change_time() {
     document.getElementById('Second').innerHTML = ('0' + curr_sec).slice(-2);
 }
 function startInterval(){
-    setInterval('change_time();', 1000);
+    setInterval('changeTime();', 1000);             //update time every second
+    setInterval('updateServerTime();', 60*60*1000); //update time from server every hour
 }
 startInterval();
 </script>

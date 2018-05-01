@@ -1,5 +1,8 @@
+#!/usr/bin/python
 import re
 import tzlocal
+import sys
+import time
 from datetime import datetime, timedelta
 
 
@@ -20,6 +23,13 @@ def get_current_time():
     """
     return datetime.now(get_timezone())
 
+def get_Unix_time():
+    """
+    Get the current unix timestamp
+    :return:
+    """
+    dt = datetime.now(get_timezone())
+    return (time.mktime(dt.timetuple()))
 
 def write_submitty_date(d=get_current_time(),microseconds=False):
     """
@@ -132,3 +142,9 @@ def parse_datetime(date_string):
         return get_current_time().replace(hour=23, minute=59, second=59, microsecond=0) + timedelta(days=days)
 
     raise ValueError("Invalid string for date parsing: " + str(date_string))
+
+if __name__ == "__main__":
+    print("HEKMFMLAKNF")
+    for arg in sys.argv:
+        if arg == "get_timestamp":
+            print(get_Unix_time())
