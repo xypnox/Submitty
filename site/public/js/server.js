@@ -1191,6 +1191,7 @@ function saveScrollLocationOnRefresh(id){
 
 function modifyThreadList(currentThreadId, currentCategoryId){
     var category_value = $( "#thread_category option:selected").val();
+    sessionStorage.setItem("category_id", category_value);
     var url = buildUrl({'component': 'forum', 'page': 'get_threads'});
     $.ajax({
             url: url,
@@ -1209,6 +1210,7 @@ function modifyThreadList(currentThreadId, currentCategoryId){
                 window.alert("Something went wrong when trying to filter. Please try again.");
             }
     })
+    
 }
 
 function replyPost(post_id){

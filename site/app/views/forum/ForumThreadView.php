@@ -249,9 +249,15 @@ HTML;
 	    	$return .= <<<HTML
 	    		<option value="{$categories[$i]['category_id']}">{$categories[$i]['category_desc']}</option>
 HTML;
-	    } 
-
-	$return .= <<<HTML
+		} 
+	
+		$return .= <<<HTML
+			<script>
+				$('#thread_category').val(parseInt(sessionStorage.getItem("category_id")));
+				if(sessionStorage.getItem("category_id") != "undefined"){
+					modifyThreadList({$currentThread}, sessionStorage.getItem("category_id"));
+				}
+			</script>
 			</select>
 			</div>
 			<button class="btn btn-primary" style="float:right;position:relative;top:3px;right:5px;display:inline-block;" title="Display search bar" onclick="this.style.display='none'; document.getElementById('search_block').style.display = 'inline-block'; document.getElementById('search_content').focus();"><i class="fa fa-search"></i> Search</button>
@@ -317,19 +323,17 @@ HTML;
 				<div id="forum_wrapper">
 					<div id="thread_list" class="thread_list">
 HTML;
-				$activeThreadAnnouncement = false;
-				$activeThreadTitle = "";
-				$function_date = 'date_format';
-				$activeThread = array();
-				$return .= $this->displayThreadList($threads, false, $activeThreadAnnouncement, $activeThreadTitle, $activeThread, $currentThread, $currentCategoryId[0]["category_id"]);
-
-					$activeThreadTitle = htmlentities(html_entity_decode($activeThreadTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+			$activeThreadAnnouncement = false;
+			$activeThreadTitle = "";
+			$function_date = 'date_format';
+			$activeThread = array();
+			$return .= $this->displayThreadList($threads, false, $activeThreadAnnouncement, $activeThreadTitle, $activeThread, $currentThread, $currentCategoryId[0]["category_id"], $display_option);
+			$activeThreadTitle = htmlentities(html_entity_decode($activeThreadTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
 			$thread_id = -1;
 			$userAccessToAnon = ($this->core->getUser()->getGroup() < 4) ? true : false;
 			$title_html = '';
 			$return .= <<<HTML
-
 					</div>
 					<div style="display:inline-block;width:70%; float: right;" id="posts_list" class="posts_list">
 HTML;
@@ -337,93 +341,92 @@ HTML;
             $title_html .= <<<HTML
             <h3 style="max-width: 95%; display:inline-block;word-wrap: break-word;margin-top:10px; margin-left: 5px;">
 HTML;
-					if($this->core->getUser()->getGroup() <= 2 && $activeThreadAnnouncement){
-                        $title_html .= <<<HTML
-							<a style="display:inline-block; color:orange; " onClick="alterAnnouncement({$activeThread['id']}, 'Are you sure you want to remove this thread as an announcement?', 'remove_announcement')" title="Remove thread from announcements"><i class="fa fa-star" onmouseleave="changeColor(this, 'gold')" onmouseover="changeColor(this, '#e0e0e0')" style="position:relative; display:inline-block; color:gold; -webkit-text-stroke-width: 1px;
+			if($this->core->getUser()->getGroup() <= 2 && $activeThreadAnnouncement){
+                $title_html .= <<<HTML
+					<a style="display:inline-block; color:orange; " onClick="alterAnnouncement({$activeThread['id']}, 'Are you sure you want to remove this thread as an announcement?', 'remove_announcement')" title="Remove thread from announcements"><i class="fa fa-star" onmouseleave="changeColor(this, 'gold')" onmouseover="changeColor(this, '#e0e0e0')" style="position:relative; display:inline-block; color:gold; -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;" aria-hidden="true"></i></a>
 HTML;
-                    } else if($activeThreadAnnouncement){
-                        $title_html .= <<<HTML
-						 <i class="fa fa-star" style="position:relative; display:inline-block; color:gold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;" aria-hidden="true"></i>
+        	} else if($activeThreadAnnouncement){
+                $title_html .= <<<HTML
+					<i class="fa fa-star" style="position:relative; display:inline-block; color:gold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;" aria-hidden="true"></i>
 HTML;
-                    } else if($this->core->getUser()->getGroup() <= 2 && !$activeThreadAnnouncement){
-                        $title_html .= <<<HTML
-							<a style="position:relative; display:inline-block; color:orange; " onClick="alterAnnouncement({$activeThread['id']}, 'Are you sure you want to make this thread an announcement?', 'make_announcement')" title="Make thread an announcement"><i class="fa fa-star" onmouseleave="changeColor(this, '#e0e0e0')" onmouseover="changeColor(this, 'gold')" style="position:relative; display:inline-block; color:#e0e0e0; -webkit-text-stroke-width: 1px;
+        	} else if($this->core->getUser()->getGroup() <= 2 && !$activeThreadAnnouncement){
+                $title_html .= <<<HTML
+					<a style="position:relative; display:inline-block; color:orange; " onClick="alterAnnouncement({$activeThread['id']}, 'Are you sure you want to make this thread an announcement?', 'make_announcement')" title="Make thread an announcement"><i class="fa fa-star" onmouseleave="changeColor(this, '#e0e0e0')" onmouseover="changeColor(this, 'gold')" style="position:relative; display:inline-block; color:#e0e0e0; -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;" aria-hidden="true"></i></a>
 HTML;
-                    }
-                    if(isset($activeThread['favorite']) && $activeThread['favorite']) {
-                    	$title_html .= <<<HTML
-							<a style="position:relative; display:inline-block; color:orange; " onClick="pinThread({$activeThread['id']}, 'unpin_thread');" title="Pin Thread"><i class="fa fa-thumb-tack" onmouseleave="changeColor(this, 'gold')" onmouseover="changeColor(this, '#e0e0e0')" style="position:relative; display:inline-block; color:gold; -webkit-text-stroke-width: 1px;-webkit-text-stroke-color: black;" aria-hidden="true"></i></a>
+            }
+            if(isset($activeThread['favorite']) && $activeThread['favorite']) {
+            	$title_html .= <<<HTML
+					<a style="position:relative; display:inline-block; color:orange; " onClick="pinThread({$activeThread['id']}, 'unpin_thread');" title="Pin Thread"><i class="fa fa-thumb-tack" onmouseleave="changeColor(this, 'gold')" onmouseover="changeColor(this, '#e0e0e0')" style="position:relative; display:inline-block; color:gold; -webkit-text-stroke-width: 1px;-webkit-text-stroke-color: black;" aria-hidden="true"></i></a>
 HTML;
-					} else {
-                    	$title_html .= <<<HTML
-							<a style="position:relative; display:inline-block; color:orange; " onClick="pinThread({$activeThread['id']}, 'pin_thread');" title="Pin Thread"><i class="fa fa-thumb-tack" onmouseleave="changeColor(this, '#e0e0e0')" onmouseover="changeColor(this, 'gold')" style="position:relative; display:inline-block; color:#e0e0e0; -webkit-text-stroke-width: 1px;-webkit-text-stroke-color: black;" aria-hidden="true"></i></a>
+			} else {
+            	$title_html .= <<<HTML
+					<a style="position:relative; display:inline-block; color:orange; " onClick="pinThread({$activeThread['id']}, 'pin_thread');" title="Pin Thread"><i class="fa fa-thumb-tack" onmouseleave="changeColor(this, '#e0e0e0')" onmouseover="changeColor(this, 'gold')" style="position:relative; display:inline-block; color:#e0e0e0; -webkit-text-stroke-width: 1px;-webkit-text-stroke-color: black;" aria-hidden="true"></i></a>
 HTML;
+			}
+            $title_html .= <<< HTML
+			{$activeThreadTitle}</h3>
+HTML;
+			$first = true;
+			$first_post_id = 1;
+			if($display_option == "tree"){
+				$order_array = array();
+				$reply_level_array = array();
+				foreach($posts as $post){
+					if($thread_id == -1) {
+						$thread_id = $post["thread_id"];
 					}
-                    $title_html .= <<< HTML
-					{$activeThreadTitle}</h3>
-HTML;
-					$first = true;
-					$first_post_id = 1;
-					if($display_option == "tree"){
-						$order_array = array();
-						$reply_level_array = array();
-						foreach($posts as $post){
-							if($thread_id == -1) {
-								$thread_id = $post["thread_id"];
-							}
-							if($first){
-								$first= false;
-								$first_post_id = $post["id"];
-							}
-							if($post["parent_id"] > $first_post_id){
-								$place = array_search($post["parent_id"], $order_array);
-								$tmp_array = array($post["id"]);
-								$parent_reply_level = $reply_level_array[$place];
-								while($place && $place+1 < sizeof($reply_level_array) && $reply_level_array[$place+1] > $parent_reply_level){
-									$place++;
-								}
-								array_splice($order_array, $place+1, 0, $tmp_array);
-								array_splice($reply_level_array, $place+1, 0, $parent_reply_level+1);
+					if($first){
+						$first= false;
+						$first_post_id = $post["id"];
+					}
+					if($post["parent_id"] > $first_post_id){
+						$place = array_search($post["parent_id"], $order_array);
+						$tmp_array = array($post["id"]);
+						$parent_reply_level = $reply_level_array[$place];
+						while($place && $place+1 < sizeof($reply_level_array) && $reply_level_array[$place+1] > $parent_reply_level){
+							$place++;
+						}
+						array_splice($order_array, $place+1, 0, $tmp_array);
+						array_splice($reply_level_array, $place+1, 0, $parent_reply_level+1);
+					} else {
+						array_push($order_array, $post["id"]);
+						array_push($reply_level_array, 1);
+					}
+				}
+				$i = 0;
+				$first = true;
+				foreach($order_array as $ordered_post){
+					foreach($posts as $post){
+						if($post["id"] == $ordered_post){
+							if($post["parent_id"] == $first_post_id) {
+								$reply_level = 1;	
 							} else {
-								array_push($order_array, $post["id"]);
-								array_push($reply_level_array, 1);
+								$reply_level = $reply_level_array[$i];
 							}
-						}
-						$i = 0;
-						$first = true;
-						foreach($order_array as $ordered_post){
-							foreach($posts as $post){
-								if($post["id"] == $ordered_post){
-									if($post["parent_id"] == $first_post_id) {
-										$reply_level = 1;	
-									} else {
-										$reply_level = $reply_level_array[$i];
-									}
-										
-									$return .= $this->createPost($thread_id, $post, $function_date, $title_html, $first, $reply_level, $display_option);
-									break;
-								}						
-							}
-							if($first){
-								$first= false;
-							}
-							$i++;
-						}	
-					} else {
-						foreach($posts as $post){
-							if($thread_id == -1) {
-								$thread_id = $post["thread_id"];
-							}
-							$return .= $this->createPost($thread_id, $post, $function_date, $title_html, $first, 1, $display_option);		
-							if($first){
-								$first= false;
-							}			
-						}
+								
+							$return .= $this->createPost($thread_id, $post, $function_date, $title_html, $first, $reply_level, $display_option);
+							break;
+						}						
 					}
+					if($first){
+						$first= false;
+					}
+					$i++;
+				}	
+			} else {
+				foreach($posts as $post){
+					if($thread_id == -1) {
+						$thread_id = $post["thread_id"];
+					}
+					$return .= $this->createPost($thread_id, $post, $function_date, $title_html, $first, 1, $display_option);		
+					if($first){
+						$first= false;
+					}			
+				}
+			}
 			$return .= <<<HTML
-
 			<hr style="border-top:1px solid #999;margin-bottom: 5px;" />
 			
 					<form style="margin-right:17px;" method="POST" action="{$this->core->buildUrl(array('component' => 'forum', 'page' => 'publish_post'))}" enctype="multipart/form-data">
@@ -496,7 +499,7 @@ HTML;
 		return $this->displayThreadList($threads, $filtering, $threadAnnouncement, $activeThreadTitle, $tempArray, $thread_id, $category_id);
 	}
 
-	public function displayThreadList($threads, $filtering, &$activeThreadAnnouncement, &$activeThreadTitle, &$activeThread, $thread_id_p, $current_category_id){
+	public function displayThreadList($threads, $filtering, &$activeThreadAnnouncement, &$activeThreadTitle, &$activeThread, $thread_id_p, $current_category_id, $display_option = 'tree'){
 					$return = "";
 					$used_active = false; //used for the first one if there is not thread_id set
 					$current_user = $this->core->getUser()->getId();
@@ -554,7 +557,7 @@ HTML;
 						$titleDisplay = htmlentities($titleDisplay, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 						$first_post_content = htmlentities($first_post_content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 						$return .= <<<HTML
-						<a href="{$this->core->buildUrl(array('component' => 'forum', 'page' => 'view_thread', 'thread_id' => $thread['id']))}">
+						<a href="{$this->core->buildUrl(array('component' => 'forum', 'page' => 'view_thread', 'option' => $display_option, 'thread_id' => $thread['id']))}">
 						<div class="{$class}">
 HTML;
 						if($thread["pinned"] == true){
