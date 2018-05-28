@@ -263,11 +263,12 @@ HTML;
 			<button class="btn btn-primary" style="float:right;position:relative;top:3px;right:5px;display:inline-block;" title="Display search bar" onclick="this.style.display='none'; document.getElementById('search_block').style.display = 'inline-block'; document.getElementById('search_content').focus();"><i class="fa fa-search"></i> Search</button>
 HTML;
 			$return .= <<<HTML
-			<input type="radio" name="selectOption" id="tree" onclick="changeDisplayOptions('tree', {$currentThread})" value="tree">  
-			<label for="radio">Hierarchical</label>  
+			<form id="display_option_div" style="width: 400px;margin-left: 450px;margin-top: -25px;">
+				<input type="radio" name="selectOption" id="tree" onclick="changeDisplayOptions('tree', {$currentThread})" value="tree">  
+				<label for="radio">Hierarchical</label>  
 
-			<input type="radio" name="selectOption" id="time" onclick="changeDisplayOptions('time', {$currentThread})" value="time">  
-			<label for="radio2">Chronological</label>
+				<input type="radio" name="selectOption" id="time" onclick="changeDisplayOptions('time', {$currentThread})" value="time">  
+				<label for="radio2">Chronological</label>
 HTML;
 	if($this->core->getUser()->getGroup() <= 2){
 			$return .= <<<HTML
@@ -276,6 +277,7 @@ HTML;
 HTML;
 	}
 	$return .= <<<HTML
+			</form>
 			<form id="search_block" style="float:right;position:relative;top:3px;right:5px;display:none;" method="post" action="{$this->core->buildUrl(array('component' => 'forum', 'page' => 'search_threads'))}">
 			<input type="text" size="35" placeholder="search" name="search_content" id="search_content"/>
 
@@ -500,6 +502,7 @@ HTML;
 	}
 
 	public function displayThreadList($threads, $filtering, &$activeThreadAnnouncement, &$activeThreadTitle, &$activeThread, $thread_id_p, $current_category_id, $display_option = 'tree'){
+					var_dump($current_category_id);
 					$return = "";
 					$used_active = false; //used for the first one if there is not thread_id set
 					$current_user = $this->core->getUser()->getId();
