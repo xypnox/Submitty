@@ -502,7 +502,6 @@ HTML;
 	}
 
 	public function displayThreadList($threads, $filtering, &$activeThreadAnnouncement, &$activeThreadTitle, &$activeThread, $thread_id_p, $current_category_id, $display_option = 'tree'){
-					var_dump($current_category_id);
 					$return = "";
 					$used_active = false; //used for the first one if there is not thread_id set
 					$current_user = $this->core->getUser()->getId();
