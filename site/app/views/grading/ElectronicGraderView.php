@@ -663,7 +663,7 @@ HTML;
                 $return .= $this->core->getOutput()->renderTemplate('LateDaysTable', 'showLateTable', $team_member->getId(), $gradeable->getId(), false);
             }
         } else {
-            $return .= $this->core->getOutput()->renderTemplate('LateDaysTable', 'showLateTable', $user->getId(), $gradeable->getId(), false);
+//            $return .= $this->core->getOutput()
         }
 
         $return .= <<<HTML
