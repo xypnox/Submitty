@@ -7,6 +7,14 @@
 	    "filename" : "left_right.txt"
 	}
     ],
+    "autograding": {
+	"submission_to_validation": [
+            "left_right.txt"
+	],
+        "work_to_details": [
+            "left_right.txt"
+	]
+    },
     "testcases":
     [
 	{
