@@ -720,7 +720,7 @@ class AdminGradeableController extends AbstractController {
         }
 
         // Setup good default dates
-        $tonight = new \DateTime();
+        $tonight = new \DateTime('now', $this->core->getConfig()->getTimezone());
         $tonight->setTime(23, 59, 59);
         $gradeable_create_data = array_merge($gradeable_create_data, [
             'ta_view_start_date' => (clone $tonight)->sub(new \DateInterval('P1D')),
