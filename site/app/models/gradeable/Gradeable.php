@@ -922,6 +922,25 @@ class Gradeable extends AbstractModel {
     }
 
     /**
+     * Clones another gradeable's rubric into this gradeable, retaining any existing components
+     * @param Gradeable $other
+     */
+    public function cloneRubric(Gradeable $other) {
+        $this->precision = $other->precision;
+        foreach ($other->components as $component) {
+            /** @var Component $component */
+            $new_comp = $this->addComponent(
+                $component->getTitle(), $component->getTaComment(), $component->getStudentComment(),
+                $component->getLowerClamp(), $component->getDefault(), $component->getMaxValue(),
+                $component->getUpperClamp(), $component->isText(), $component->isPeer(), $component->getPage());
+            foreach ($component->getMarks() as $mark) {
+
+                $new_comp->addMark($mark->getTitle(), $mark->getPoints(), $mark->isPublish());
+            }
+        }
+    }
+
+    /**
      * Sets the path to the autograding config
      * @param string $path Must not be blank
      */
