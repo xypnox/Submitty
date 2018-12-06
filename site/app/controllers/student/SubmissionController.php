@@ -331,7 +331,7 @@ class SubmissionController extends AbstractController {
     }
 
     /**
-    * Function for verification that a given RCS ID is valid and has a corresponding user and gradeable.
+    * Function for verification that given RCS IDs are valid and have a corresponding user and gradeable.
     * This should be called via AJAX, saving the result to the json_buffer of the Output object.
     * If failure, also returns message explaining what happened.
     * If success, also returns highest version of the student gradeable.
@@ -394,18 +394,21 @@ class SubmissionController extends AbstractController {
             $graded_gradeables[] = $gg;
         }
 
-        if (count($graded_gradeables) === 0) {
-            // No user was on a team
-            $msg = 'No user on a team';
-            $return = array('success' => false, 'message' => $msg);
-            $this->core->getOutput()->renderJson($return);
-            return $return;
-        } else if (count($graded_gradeables) > 1) {
-            // Not all users were on the same team
-            $msg = "Inconsistent teams. One or more users are on different teams.";
-            $return = array('success' => false, 'message' => $msg);
-            $this->core->getOutput()->renderJson($return);
-            return $return;
+        if ($gradeable->isTeamAssignment()) {
+            // TODO: this block may not be correct.  Its unclear what the desired behavior / use would be for teams.
+            if (count($graded_gradeables) === 0) {
+                // Team gradeable and no user was on a team
+                $msg = 'No user on a team';
+                $return = array('success' => false, 'message' => $msg);
+                $this->core->getOutput()->renderJson($return);
+                return $return;
+            } else if (count($graded_gradeables) > 1) {
+                // Not all users were on the same team
+                $msg = "Inconsistent teams. One or more users are on different teams.";
+                $return = array('success' => false, 'message' => $msg);
+                $this->core->getOutput()->renderJson($return);
+                return $return;
+            }
         }
 
         $graded_gradeable = $graded_gradeables[0];
