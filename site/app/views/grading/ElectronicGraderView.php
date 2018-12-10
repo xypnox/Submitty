@@ -584,6 +584,7 @@ class ElectronicGraderView extends AbstractView {
             add_files($results, $display_version_instance->getResultsFiles(), 'results');
         }
 
+        $this->core->getOutput()->addInternalCss('pdf/toolbar_embedded.css');
         return $this->core->getOutput()->renderTwigTemplate("grading/electronic/SubmissionPanel.twig", [
             "gradeable_id" => $graded_gradeable->getGradeableId(),
             "submitter_id" => $graded_gradeable->getSubmitter()->getId(),
