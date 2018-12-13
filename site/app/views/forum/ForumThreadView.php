@@ -354,7 +354,11 @@ HTML;
 							dynamicScrollContentOnDemand($('.thread_list'), buildUrl({'component': 'forum', 'page': 'get_threads', 'page_number':'{{#}}'}), {$currentThread}, '', '{$currentCourse}');
 							var active_thread = $('#thread_list .active');
 							if(active_thread.length > 0) {
+<<<<<<< HEAD
 								active_thread[0].scrollIntoViewIfNeeded(true);
+=======
+								active_thread[0].scrollIntoView({block: "center", inline: "nearest"}); 
+>>>>>>> ae33ee96... forum thread auto scrolls to center relative to current thread
 							}
 						});
 					</script>
