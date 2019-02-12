@@ -753,6 +753,7 @@ HTML;
 
 	public function createPost($thread_id, $post, $function_date, $title_html, $first, $reply_level, $display_option){
 		$current_user = $this->core->getUser()->getId();
+		$user_group = $this->core->getUser()->getGroup();
 		$post_html = "";
 		$post_id = $post["id"];
 		$thread_dir = FileUtils::joinPaths(FileUtils::joinPaths($this->core->getConfig()->getCoursePath(), "forum_attachments"), $thread_id);
@@ -936,7 +937,24 @@ HTML;
 						$return .= <<<HTML
 	            	</form>
 HTML;
-
+	    $return .= $this->core->getOutput()->renderTwigTemplate("forum/DiscussionPost.twig", [ 
+			'classes' => $classes,
+		   	'post_id' => $post_id,
+		   	'thread_id' => $thread_id,
+		   	'reply_level' => $reply_level,
+		   	'title_html' => $title_html,
+		   	'post_content' => $post_content,
+		   	'deleted' => $deleted,
+		   	'first' => $first,
+		   	'user_group' => $user_group,
+		   	'post_author' => $post["author_user_id"],
+		   	'current_user' => $current_user,
+		   	'thread_resolve_state' => $thread_resolve_state,
+		   	'author_email' => $author_email,
+		   	'info_name' => $info_name, 
+			'visible_user_json' => $visible_user_json,
+			'jscriptAnonFix' => $jscriptAnonFix
+		]);
 		return $return;
 	}
 
